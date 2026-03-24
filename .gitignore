@@ -1,0 +1,20 @@
+# Node
+node_modules/
+npm-debug.log
+
+# Env
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+
+# Uploads (por si vuelves a usar local)
+backend/uploads/
+
+# Optional
+dist/
+build/
