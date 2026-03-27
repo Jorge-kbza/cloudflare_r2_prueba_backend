@@ -12,6 +12,9 @@ const client = new S3Client({
   },
 });
 
+// Cache simple en memoria
+const signedUrlCache = new Map();
+
 const uploadToR2 = async (file) => {
   const key = `videos/${uuidv4()}-${file.originalname}`;
 
@@ -24,13 +27,18 @@ const uploadToR2 = async (file) => {
 
   await client.send(command);
 
-  // URL pública (simple) `${process.env.R2_ENDPOINT/
-  const url = key; // Guardamos solo la clave, no la URL completa
-
-  return url;
+  return key; // Guardamos solo la clave, no la URL completa
 };
 
 const getSignedVideoUrl = async (key) => {
+  const now = Date.now();
+
+  // Verificamos si ya tenemos URL válida en cache
+  if (signedUrlCache.has(key)) {
+    const { url, expiresAt } = signedUrlCache.get(key);
+    if (now < expiresAt) return url;
+  }
+
   const command = new GetObjectCommand({
     Bucket: process.env.R2_BUCKET,
     Key: key,
