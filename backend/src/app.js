@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const pool = require('./config/db');
 
+const categoryRoutes = require('./routes/category.routes');
+const subcategoryRoutes = require('./routes/subcategory.routes');
 const videoRoutes = require('./routes/video.routes');
 
 const app = express();
@@ -19,5 +21,7 @@ app.get('/health', async (req, res) => {
 });
 
 app.use('/videos', videoRoutes);
+app.use('/categories', categoryRoutes);
+app.use('/subcategories', subcategoryRoutes);
 
 module.exports = app;

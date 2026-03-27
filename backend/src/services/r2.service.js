@@ -1,5 +1,7 @@
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { v4: uuidv4 } = require('uuid');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const client = new S3Client({
   region: 'auto',
@@ -22,10 +24,23 @@ const uploadToR2 = async (file) => {
 
   await client.send(command);
 
-  // URL pública (simple)
-  const url = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${key}`;
+  // URL pública (simple) `${process.env.R2_ENDPOINT/
+  const url = key; // Guardamos solo la clave, no la URL completa
 
   return url;
 };
 
-module.exports = { uploadToR2 };
+const getSignedVideoUrl = async (key) => {
+  const command = new GetObjectCommand({
+    Bucket: process.env.R2_BUCKET,
+    Key: key,
+  });
+
+  const url = await getSignedUrl(client, command, {
+    expiresIn: 60 * 20, // 20 minutos
+  });
+
+  return url;
+};
+
+module.exports = { uploadToR2, getSignedVideoUrl };
