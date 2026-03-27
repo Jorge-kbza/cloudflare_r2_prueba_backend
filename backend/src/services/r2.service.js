@@ -48,6 +48,9 @@ const getSignedVideoUrl = async (key) => {
     expiresIn: 60 * 20, // 20 minutos
   });
 
+  // Guardamos en cache
+  signedUrlCache.set(key, { url, expiresAt: now + expiresIn * 1000 });
+
   return url;
 };
 
