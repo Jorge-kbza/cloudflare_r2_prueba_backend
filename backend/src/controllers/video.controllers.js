@@ -27,31 +27,6 @@ const uploadVideo = async (req, res) => {
   }
 };
 
-const getVideoUrl = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const result = await pool.query(
-      'SELECT url FROM videos WHERE id = $1',
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Video not found' });
-    }
-
-    const key = result.rows[0].url;
-
-    const signedUrl = await getSignedVideoUrl(key);
-
-    res.json({ url: signedUrl });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error generating signed URL' });
-  }
-};
-
 const getVideos = async (req, res) => {
   try {
     const { categoryId, subcategoryId } = req.query;
@@ -123,4 +98,33 @@ const deleteVideo = async (req, res) => {
   }
 };
 
-module.exports = { uploadVideo, getVideos, getVideoById, getVideoUrl, deleteVideo };
+const streamVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      'SELECT url FROM videos WHERE id = $1',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+
+    const key = result.rows[0].url;
+
+    // 🔥 aquí luego irá auth
+    // if (!user.hasAccess) return res.status(403)
+
+    const signedUrl = await getSignedVideoUrl(key);
+
+    // 🔥 magia aquí
+    res.redirect(signedUrl);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error streaming video' });
+  }
+};
+
+module.exports = { uploadVideo, getVideos, getVideoById, getVideoUrl, deleteVideo, streamVideo };

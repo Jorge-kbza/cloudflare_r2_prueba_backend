@@ -44,8 +44,9 @@ const getSignedVideoUrl = async (key) => {
     Key: key,
   });
 
+  const expiresIn = 20 * 60; // 20 minutos
   const url = await getSignedUrl(client, command, {
-    expiresIn: 60 * 20, // 20 minutos
+    expiresIn,
   });
 
   // Guardamos en cache
