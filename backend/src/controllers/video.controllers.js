@@ -127,4 +127,4 @@ const streamVideo = async (req, res) => {
   }
 };
 
-module.exports = { uploadVideo, getVideos, getVideoById, getVideoUrl, deleteVideo, streamVideo };
+module.exports = { uploadVideo, getVideos, getVideoById, deleteVideo, streamVideo };
